@@ -1,7 +1,7 @@
 **This project is a culmination of many months of work spent researching, prototyping and manufacturing circuits, and writing code!**
 
 **Hardware used in this project:**
-    -Arduino R4 Wifi
+    \n-Arduino R4 Wifi
     -MCP2515 CAN Controller
     -MCP2551 CAN Tranceiver
     -CrystalFontz CFAG24064A-YYH-TZ 240x64 LCD Screen
