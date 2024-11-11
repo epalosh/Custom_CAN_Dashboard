@@ -10,4 +10,4 @@
     -Screen: u8g2                          (https://github.com/olikraus/u8g2)
     -CAN: mcp_can                          (https://github.com/coryjfowler/MCP_CAN_lib)
 
-!(https://github.com/epalosh/Custom_CAN_Dashboard/blob/main/DashPic.JPG)
+![](https://github.com/epalosh/Custom_CAN_Dashboard/blob/main/DashPic.JPG)
