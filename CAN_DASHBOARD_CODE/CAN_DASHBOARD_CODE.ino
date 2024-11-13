@@ -132,7 +132,7 @@ void loop()
         
       } else if (rxId == 0x649) {                                             // 0x649: Coolant temp is the 2nd byte, Battery voltage is 6th byte
 
-        coolantTemp = convertBufferRangeToDecimalString(rxBuf, 1, 40, 1, 1);        // Offset +40
+        coolantTemp = convertBufferRangeToDecimalString(rxBuf, 1, -40, 0, 0);        // Offset -40
         //Serial.println("--- updating coolant temp ---");
         coolantC = (int)coolantTemp.toFloat();
         coolantF = (int)(coolantC * 9.0 / 5.0 + 32.0); // Calculating + updating coolant temp in fahrenheit
@@ -160,7 +160,7 @@ void loop()
   }
 
   // Print incoming values to terminal, for debug purposes:
-  Serial.println("rpm: " + String(engineRPM) + " | coolantTemp: " + String(coolantTemp) + " | oilPressure: " + String(oilPressureCAN) + " | Battery: " + String(volts));
+  //Serial.println("rpm: " + String(engineRPM) + " | coolantTemp: " + String(coolantTemp) + " | oilPressure: " + String(oilPressureCAN) + " | Battery: " + String(volts));
 
   // Stopwatch (time running) logic - based on arduino internal timer.
   unsigned long currentMillis = millis();                                   // Time to update screen (100ms)
