@@ -23,9 +23,10 @@
 #include "stdlib.h"
 #include "mcp_can.h"                        // CAN Library
 #include "U8g2lib.h"                        // LCD screen library
+#include <FastLED_NeoPixel.h>               // LED Library (Compatible with Arduino R4)
 
 // LCD Initialization.
-U8G2_T6963_240X64_F_8080 u8g2(U8G2_R2, 4, 5, A4, A5, A0, A3, A2, A1, 7, 6, 1); //[full framebuffer, size = 1920 bytes]
+U8G2_T6963_240X64_F_8080 u8g2(U8G2_R0, 4, 5, A4, A5, A0, A3, A2, A1, 7, 6, 1); //[full framebuffer, size = 1920 bytes]
 #define CAN0_INT 2                          // Set INT to pin 2
 MCP_CAN CAN0(10);                           // Set CS to pin 10
 
@@ -71,6 +72,22 @@ unsigned char len = 0;                      // Length of received message
 unsigned char rxBuf[8];                     // Buffer to store received bits
 char msgString[128];                        // Array to store serial string (print statements)
 
+
+// LED Setup
+
+// Constants
+#define DATA_PIN 3          // Pin connected to the LED strip
+#define NUM_LEDS 16         // Total number of LEDs on the strip
+#define BRIGHTNESS 50       // Brightness level (0 to 255)
+
+// Declare the NeoPixel strip object
+FastLED_NeoPixel<NUM_LEDS, DATA_PIN, NEO_GRB> strip;
+
+// Input value for the number of LEDs to light up
+int value = 8; // Change this value to test (1-16)
+int rpmLightVal = 0;
+
+
 /////////////////////////////////////////////////////
 //////////////////// Begin setup ////////////////////
 void setup()
@@ -97,6 +114,12 @@ void setup()
   CAN0.setMode(MCP_NORMAL);                             // Set operation mode to normal so the MCP2515 sends acks to received data.
   pinMode(CAN0_INT, INPUT);                             // Configuring pin for /INT input
   Serial.println("MCP2515 Library Receive Example...");
+
+  //LED init
+    strip.begin();                                      // Initialize the LED strip
+    strip.setBrightness(BRIGHTNESS);
+    strip.clear();                                      // Clear all LEDs at the start
+    strip.show();
 }
 //\\\\\\\\\\\\\\\\\\   End setup   \\\\\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -184,6 +207,10 @@ void loop()
       }
     }
   }
+
+  // Updating LEDs
+  rpmLightVal = rpm/812;
+  displayValue(rpmLightVal);
 }
 //\\\\\\\\\\\\\\\\\\ End of main loop \\\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -254,4 +281,29 @@ String convertBufferRangeToDecimalString(const unsigned char *buffer, double sca
   sprintf(resultString, "%.2f", scaledResult); // Adjust precision as needed
 
   return String(resultString);
+}
+
+// LED Logic
+void displayValue(int val) {
+    strip.clear(); // Clear all LEDs
+
+    // Ensure the value is within bounds
+    val = constrain(val, 1, NUM_LEDS);
+
+    // Light up the LEDs in reverse order
+    for (int i = 0; i < val; i++) {
+        int reverseIndex = NUM_LEDS - 1 - i;
+
+        // Assign colors based on the segment
+        if (reverseIndex >= 10) {             // Last 4 LEDs: Purple
+            strip.setPixelColor(reverseIndex, strip.Color(0, 255, 0));
+        } else if (reverseIndex >= 5) {       // Middle 5 LEDs: Red
+            strip.setPixelColor(reverseIndex, strip.Color(255, 0, 0));
+        } else {                              // First 6 LEDs: Green
+            strip.setPixelColor(reverseIndex, strip.Color(128, 0, 128));
+        }
+    }
+
+    // Display the updated LEDs
+    strip.show();
 }
